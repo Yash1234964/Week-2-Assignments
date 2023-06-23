@@ -34,4 +34,82 @@ const PORT = 3000;
 const app = express();
 // write your logic here, DONT WRITE app.listen(3000) when you're running tests, the tests will automatically start the server
 
-module.exports = app;
+var details=[];
+
+app.use(express.json());
+
+function signupFn(req,res){
+
+  var isPresent = false;
+
+  for(var i=0 ; i<details.length ; i++){
+    if(details[i].email === req.body.email){
+      isPresent = true;
+    }
+  }
+
+  if(isPresent){
+    res.status(400).send("User already exist");
+  }
+  else{
+    details.push(req.body)
+    res.status(200).send("Registration Successful");
+  }
+
+}
+
+function loginFn(req,res){
+  console.log("start");
+  var user=null;
+  for(var i=0;i<details.length;i++){
+    if(details[i].email===req.body.email && details[i].password===req.body.password){
+    user=details[i];
+     break;
+    }
+  }
+  if(user){
+    res.json({
+      firstName:user.firstName,
+      lastName:user.lastName,
+      email:user.email
+    });
+    res.status(200);
+  }
+  else{
+    res.status(400).send("Login failed");
+  }
+  // console.log("end");
+
+}
+
+function dataFn(req,res){
+
+  var user=null;
+  for(var i=0;i<details.length;i++){
+    if(details[i].email===req.body.email && details[i].password===req.body.password)
+    user=details[i];
+  }
+  if(user){
+    res.json({
+      firstName:user.firstName,
+      lastName:user.lastName,
+      email:user.email
+    });
+  return  res.status(200)
+  }
+  else{
+    return res.status(400).send("No data to display");
+  }
+
+
+}
+
+app.post('/signup',signupFn);
+app.post('/login',loginFn);
+app.get('/data',dataFn);
+
+app.listen(3000);
+
+// // module.exports = app;
+
+
