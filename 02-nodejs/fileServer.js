@@ -21,5 +21,33 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 
+function getFileNamesFn(req,res){
 
-module.exports = app;
+  fs.readdir(path.join(__dirname, './files/'), (err, files) => {
+    if (err) {
+    return res.status(500).json({ error: 'Failed to retrieve files' });
+    }
+    res.json(files);
+  });
+
+}
+
+function getFilesByNameFN(req,res){
+
+  const filepath = path.join(__dirname, './files/', req.params.filename);
+
+  fs.readFile(filepath, 'utf8', (err, data) => {
+    if (err) {
+      return res.status(404).send('File not found');
+    }
+    res.send(data);
+  });
+
+}
+
+
+app.get('/files',getFileNamesFn);
+app.get('/files/:filename',getFilesByNameFN);
+app.listen(3000);
+
+// module.exports = app;
