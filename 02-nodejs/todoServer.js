@@ -46,4 +46,76 @@ const app = express();
 
 app.use(bodyParser.json());
 
-module.exports = app;
+var todoList=[];
+var id=0;
+function fetchtodolistFn(req,res){
+
+  if(todoList.length === 0)
+  res.status(400).send("List is empty");
+  else{
+    res.json(todoList);
+    res.status(200);
+  }
+}
+
+function fetchtodolistbyidFN(req,res){
+
+  const todo = todoList.find(obj => obj.id === parseInt(req.params.id));
+
+  if(todo){
+    res.json(todo);
+    res.status(200);
+  }else{
+    res.status(400).send("No data found");
+  }
+
+}
+
+function addTodoInTheListFn(req,res){
+  id=id+1;
+  const obj = {
+      id:id,
+      title:req.body.title,
+      completed:req.body.completed,
+      description:req.body.description
+  };
+  todoList.push(obj);
+  res.status(200).send("Element added successfully");
+}
+
+function updateItemByIdFn(req,res){
+     var todoToUpdate = null;
+  for(var i=0;i<todoList.length;i++){
+      if(todoList[i].id === parseInt(req.params.id))
+          todoToUpdate =i;
+  }
+  if(todotoUpdate){
+     todoList[todoToUpdate].title = req.body.title;
+     todoList[todoToUpdate].completed = req.body.title;
+     todoList[todoToUpdate].description=req.body.decsription;
+     res.json(todoList[todoToUpdate]);
+  }
+ else{
+  res.status(200).send("Invalid Id Entered");
+ }
+}
+
+function deleteItemByIdFn(req,res){
+  var todoIndex = null;
+   todoIndex = todos.findIndex(t => t.id === parseInt(req.params.id));
+  if (todoIndex === null) {
+    res.status(404).send();
+  } else {
+    todos.splice(todoIndex, 1);
+    res.status(200).send();
+  }
+}
+
+
+app.get('/todos',fetchtodolistFn);
+app.get('/todos/:id',fetchtodolistbyidFN);
+app.post('/todos',addTodoInTheListFn);
+app.put('/todos/:id',updateItemByIdFn);
+app.delete('/delete:id',deleteItemByIdFn);
+app.listen(3000);
+// module.exports = app;
